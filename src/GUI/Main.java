@@ -14,7 +14,17 @@ import java.util.Scanner;
  */
 public class Main extends javax.swing.JFrame {
 
-    String sym = "()*|01;";
+    //String sym = "()*|01;";
+    /* 0 y 1 -> Parentesis
+    * 2 y 4 -> Operadores
+    * 5 y 6 -> Operandos
+    * 7 -> fin de linea ... ;
+     */
+    String symAB = "()*|ab;"; // Tipo 1: Numerica
+    String sym01 = "()*|01;"; // Tipo 2: Alfabetica
+
+    boolean existe0, existe1, existeA, existeB;
+    int valor0, valor1, valorA, valorB;
 
     /**
      * Creates new form Main
@@ -110,7 +120,7 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -153,7 +163,7 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
         TxtA_tokens.setText("");
         TxtA_validaciones.setText("");
-        
+
         leerArchivo();
     }//GEN-LAST:event_Btn_limpiarActionPerformed
 
@@ -183,7 +193,7 @@ public class Main extends javax.swing.JFrame {
         //URL path = this.getClass().getResource("/reportes/Ticked.jasper");
 
         // Fichero del que queremos leer
-        File fichero = new File("/Users/mauricio/Desktop/Programas Mike/P2-Automata BooleanoArchivo/src/archivo/tokens.txt");
+        File fichero = new File("/Users/Jedidian/Documents/GitHub/Java/P6-AutomataAlfanumericoArchivo/src/archivo/tokens.txt");
         Scanner s = null;
 
         try {
@@ -211,15 +221,44 @@ public class Main extends javax.swing.JFrame {
                     String cAnterior = TxtA_validaciones.getText();
 
                     boolean valido = true;
-                    valido = evaluarCadena(token);
+                    int tipo;
+
+                    System.out.println("cadena: " + token);
+                    tipo = llenar(token);
+                    //valido = evaluarCadena(token);
+
+//                    if (valido == true) {
+//                        cNueva = cAnterior + " Cadena Valida" + "\n";
+//                    } else {
+//                        cNueva = cAnterior + " Cadena No valida" + "\n";
+//                    }
+                    if (tipo != -1) {
+
+                        if (tipo == 1) {
+                            System.out.println("tipo de cadena: Numerica");
+                            //lbl_tipo.setText("0`s y 1`s");
+                        } else {
+                            System.out.println("tipo de cadena: alfabetica");
+                            //lbl_tipo.setText("a`s y b`s");
+                        }
+
+                    } else {
+                        System.out.println("Cadena Vacia: " + tipo);
+                    }
+
+                    System.out.println(" - - - - - - - - - - ");
+
+                    valido = evaluarCadena(token, tipo);
 
                     if (valido == true) {
+                        //TxtA_validaciones.setText("Cadena Valida");
                         cNueva = cAnterior + " Cadena Valida" + "\n";
                     } else {
+                        //TxtA_validaciones.setText("Cadena  Invalida");
                         cNueva = cAnterior + " Cadena No valida" + "\n";
                     }
-                    
-                     TxtA_validaciones.setText(cNueva);
+
+                    TxtA_validaciones.setText(cNueva);
                 }
             }
 
@@ -238,8 +277,20 @@ public class Main extends javax.swing.JFrame {
 
     }
 
-    public boolean evaluarCadena(String cadena) {
+    public boolean evaluarCadena(String cadena, int tipo) {
 
+        String simbolos = "";
+        
+        //Cadena numerica
+        if(tipo == 1){
+            System.out.println("Validacion de cadena numerica");
+            simbolos = sym01;
+        }//Cadena alfabetica
+        else{
+            System.out.println("Validacion de cadena numerica");
+            simbolos = symAB;
+        }
+        
         boolean valido = true;
 
         if (!cadena.equalsIgnoreCase("")) {
@@ -252,7 +303,7 @@ public class Main extends javax.swing.JFrame {
                 char c = cadena.charAt(i);
                 String actual = "";
 
-                int pos = sym.indexOf(c);
+                int pos = simbolos.indexOf(c);
 
                 if (pos != -1) {
                     actual = c + " -> caracter valido \n";
@@ -272,6 +323,218 @@ public class Main extends javax.swing.JFrame {
         }
 
         return valido;
+    }
+    
+    public int llenar( String cadena ){
+       
+       int tipo = -1;
+       //Llenado de Valores numericos de cada Operador
+       valor0 = cadena.indexOf('0') ;
+       valor1 = cadena.indexOf('1') ;
+       valorA = cadena.indexOf('a') ;
+       valorB = cadena.indexOf('b') ;
+       
+       // 0
+       if( valor0 != -1){
+           existe0 = true;
+       }else{
+           existe0 = false;
+       }
+       
+       // 1
+       if( valor1 != -1){
+           existe1 = true;
+       }else{
+           existe1 = false;
+       }
+       
+       //A
+       if( valorA != -1){
+           existeA = true;
+       }else{
+           existeA = false;
+       }
+       
+       // B
+       if( valorB != -1){
+           existeB = true;
+       }else{
+           existeB = false;
+       }
+       System.out.println("existeO: "+ existe0 + " Valor0; " + valor0);
+       System.out.println("existe1: "+ existe1 + " Valor1; " + valor1);
+       System.out.println("existeA: "+ existeA + " ValorA; " + valorA);
+       System.out.println("existeB: "+ existeB + " ValorB; " + valorB);
+       
+       tipo = revisarValores( existe0, existe1, existeA, existeB);
+       
+       return tipo;
+   }
+    
+   public int revisarValores(boolean c0, boolean c1, boolean cA, boolean cB){
+       int tipo = -1;
+       
+       //vacio
+       if( (c0 ==false) && (c1 ==false) && (cA ==false) && (cB ==false) ){
+           tipo = -1;
+       }// inicio con A o B
+       else if( ((c0 ==false) && (c1 ==false) && (cA ==false) && (cB ==true))  ||
+                ((c0 ==false) && (c1 ==false) && (cA ==true) && (cB ==false)) || 
+                ((c0 ==false) && (c1 ==false) && (cA ==true) && (cB ==true)) ){
+           
+           tipo = 2;
+           
+       }// inicio con 0 o 1 
+       else if( ((c0 ==false) && (c1 ==true) && (cA ==false) && (cB ==false))  ||
+                ((c0 ==true) && (c1 ==false) && (cA ==false) && (cB ==false)) || 
+                ((c0 ==true) && (c1 ==true) && (cA ==false) && (cB ==false)) ){
+           
+           tipo = 1;
+           
+       }// Numero vs Letra
+       else if(  ((c0 ==false) && (c1 ==true) && (cA ==false) && (cB ==true)) ||
+                 ((c0 ==false) && (c1 ==true) && (cA ==true) && (cB ==false)) || 
+                 ((c0 ==true) && (c1 ==false) && (cA ==false) && (cB ==true)) || 
+                 ((c0 ==true) && (c1 ==false) && (cA ==true) && (cB ==false)) ){
+           
+           // C1 vs A, B
+           if( (c1== true) && (cB == true)){
+               System.out.println("Comparacion entre 1 y B");
+               tipo = compararNumeroLetra( valor1, valorB );
+           }
+           else if( (c1== true) && (cA == true)){
+               System.out.println("Comparacion entre 1 y A");
+               tipo = compararNumeroLetra( valor1, valorA ) ;
+           }
+           //C0 vs, A,B
+           else if( (c0== true) && (cB == true)){
+               System.out.println("Comparacion entre 0 y B");
+               tipo = compararNumeroLetra( valor0, valorB );
+           }
+           else if( (c0== true) && (cA == true)){
+               System.out.println("Comparacion entre 0 y A");
+               tipo = compararNumeroLetra( valor0, valorA );
+           }
+       }// Numero vs 2Letras
+       else if(  ((c0 ==false) && (c1 ==true) && (cA ==true) && (cB ==true)) ||
+                 ((c0 ==true) && (c1 ==false) && (cA ==true) && (cB ==true)) ){
+           
+           // C1 vs A, B
+           if( (c1== true) && (cA == true) && (cB == true) ){
+               System.out.println("Comparacion entre 1, A y B");
+               tipo = compararNumero2Letras( valor1, valorA, valorB );
+           }// C0 vs A, B
+           else if( (c1== true) && (cA == true) && (cB == true) ){
+               System.out.println("Comparacion entre 0, A y B");
+               tipo = compararNumero2Letras( valor0, valorA, valorB );
+           }
+  
+       }// Letra vs 2Numeros
+       else if(  ((c0 ==true) && (c1 ==true) && (cA ==false) && (cB ==true)) ||
+                 ((c0 ==true) && (c1 ==true) && (cA ==true) && (cB ==false)) ){
+           
+           //B vs C0, C1
+           if( (c0== true) && (c1 == true) && (cB == true) ){
+               System.out.println("Comparacion entre 1, A y B");
+               tipo = compararLerta2Numeros( valorB, valor0, valor1 );
+           }//A vs C0, C1
+           else if( (c0== true) && (c1 == true) && (cA == true) ){
+               System.out.println("Comparacion entre 0, A y B");
+               tipo = compararLerta2Numeros( valorA, valor0, valor1 );
+           }
+  
+       }// 2Letras vs 2Numeros
+       else if(  ((c0 ==true) && (c1 ==true) && (cA ==true) && (cB ==true)) ){
+
+            System.out.println("Comparacion entre 0, 1, A y B");
+            //tipo = compararTodo( valor0, valor1, valorA, valorB );
+       }
+       
+       return tipo;
+   }
+   
+   public int compararNumeroLetra( int numero, int letra){
+       int tipo = -1;
+       
+       if( numero < letra ){
+           System.out.println("Empieza con numero");
+           tipo = 1;
+       }else{
+           System.out.println("Empieza con letra");
+           tipo = 2;
+       }
+   
+       return tipo;
+   }
+   
+    public int compararNumero2Letras(int numero, int letra1, int letra2) {
+        int tipo = -1;
+
+        //nun vs l1
+        if ((numero < letra1)) {
+
+            //inicia con numero
+            if ((numero < letra2)) {
+                System.out.println("inicia con numero");
+                tipo = 1;
+            }//inicia con letra
+            else {
+                System.out.println("inicia con letra");
+                tipo = 2;
+            }
+        }//nun vs l2
+        else if ((numero < letra2)) {
+
+            //inicia con numero
+            if ((numero < letra1)) {
+                System.out.println("inicia con numero");
+                tipo = 1;
+            }//inicia con letra
+            else {
+                System.out.println("inicia con letra");
+                tipo = 2;
+            }
+        } else {
+            System.out.println("inicia con letra");
+            tipo = 2;
+        }
+
+        return tipo;
+    }
+    
+    public int compararLerta2Numeros(int letra, int num1, int num2) {
+        int tipo = -1;
+
+        //l vs num1
+        if ((letra < num1)) {
+
+            //inicia con letra
+            if ((letra < num2)) {
+                System.out.println("inicia con letra");
+                tipo = 2;
+            }//inicia con letra
+            else {
+                System.out.println("inicia con numero");
+                tipo = 1;
+            }
+        }//l vs num2
+        else if ((letra < num2)) {
+
+            //inicia con letra
+            if ((letra < num1)) {
+                System.out.println("inicia con letra");
+                tipo = 2;
+            }//inicia con letra
+            else {
+                System.out.println("inicia con numero");
+                tipo = 1;
+            }
+        } else {
+            System.out.println("inicia con numero");
+            tipo = 1;
+        }
+
+        return tipo;
     }
 
 }
